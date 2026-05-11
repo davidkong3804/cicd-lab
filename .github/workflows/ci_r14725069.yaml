@@ -31,7 +31,7 @@ jobs:
       - name: Test
         run: |
           mkdir -p reports
-          npm test -- --reporter=default --reporter=junit --outputFile.junit=reports/vitest-junit.xml
+          npm test
 
       - name: Upload test report artifact
         if: always()
@@ -48,4 +48,4 @@ jobs:
           name: vitest
           path: reports/vitest-junit.xml
           reporter: java-junit
-          fail-on-error: "true"
+          fail-on-error: true
