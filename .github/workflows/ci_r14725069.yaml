@@ -3,15 +3,18 @@ name: ci r14725069
 on:
   push:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -27,21 +30,22 @@ jobs:
 
       - name: Test
         run: |
-          mkdir -p test-results
-          npm test -- --reporter default --reporter junit --outputFile test-results/junit.xml
+          mkdir -p reports
+          npm test -- --reporter=default --reporter=junit --outputFile.junit=reports/vitest-junit.xml
 
       - name: Upload test report artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: test-results
-          path: test-results/junit.xml
+          name: test-report
+          path: reports/vitest-junit.xml
+          if-no-files-found: error
 
       - name: Test summary
         if: always()
         uses: dorny/test-reporter@v1
         with:
           name: vitest
-          path: test-results/junit.xml
+          path: reports/vitest-junit.xml
           reporter: java-junit
           fail-on-error: "true"
